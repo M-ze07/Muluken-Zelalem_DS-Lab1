@@ -1,0 +1,322 @@
+								lab3 rpc			
+	rpc.java
+import java.rmi.*;
+import java.lang.Math.*;
+import java.rmi.server.*;
+public class rpc extends UnicastRemoteObject implements ucet
+{
+public rpc()throws Exception
+{
+}
+public int function(int a,int b)throws RemoteException
+{
+int m;
+m=(a*a)+(b*b)+(2*a*b);
+return m;
+}
+public int power(int a,int b)throws RemoteException
+{
+int m=(int)Math.pow(a,b);
+return m;
+}
+public double log(int a)throws RemoteException
+{
+return(Math.log(a));
+}
+}
+----------------------------------------------------------------------------------------------
+						serverrpc.java
+
+import java.rmi.*;
+import java.rmi.server.*;
+public class serverrpc
+{
+public static void main(String arg[])
+{
+try
+{
+rpc ob=new rpc();
+Naming.rebind("serverrpc",ob);
+}
+catch(Exception e)
+  {
+  }
+}
+}
+------------------------------------------------------------------------------------------------
+							ucet.java
+
+import java.rmi.*;
+public interface ucet extends Remote
+{
+public int function(int a,int b)throws RemoteException;
+public int power(int a,int b)throws RemoteException;
+public double log(int a)throws RemoteException;
+}
+--------------------------------------------------------------------------------------------
+						Lab 3 RPC task 2
+
+	rpcclient.java
+import java.io.*; 
+import java.net.*; 
+class RPCClient 
+{ 
+RPCClient() 
+{ 
+try 
+{ 
+InetAddress ia = InetAddress.getLocalHost(); 
+DatagramSocket ds = new DatagramSocket(); 
+DatagramSocket ds1 = new DatagramSocket(1300); 
+System.out.println("\nRPC Client\n"); 
+System.out.println("Enter method name and parameter like add 3 4\n"); 
+while (true) 
+{ 
+BufferedReader br = new BufferedReader(new 
+InputStreamReader(System.in)); 
+String str = br.readLine(); 
+byte b[] = str.getBytes(); 
+DatagramPacket dp = new DatagramPacket(b,b.length,ia,1200); 
+ ds.send(dp); 
+dp = new DatagramPacket(b,b.length); 
+ds1.receive(dp); 
+String s = new String(dp.getData(),0,dp.getLength()); 
+System.out.println("\nResult = " + s + "\n"); 
+} 
+} 
+catch (Exception e) 
+{ 
+e.printStackTrace(); 
+} 
+} 
+public static void main(String[] args) 
+{ 
+new RPCClient(); 
+} 
+}
+----------------------------------------------------------------------------------
+	rpcserver.java
+
+import java.util.*; 
+import java.net.*; 
+class RPCServer 
+{ 
+DatagramSocket ds; 
+DatagramPacket dp; 
+String str,methodName,result; 
+int val1,val2; 
+RPCServer() 
+{ 
+try 
+{ 
+ds=new DatagramSocket(1200); 
+byte b[]=new byte[4096]; 
+while(true) 
+{ 
+dp=new DatagramPacket(b,b.length); 
+ds.receive(dp); 
+str=new String(dp.getData(),0,dp.getLength()); 
+if(str.equalsIgnoreCase("q")) 
+{ 
+System.exit(1); 
+} else 
+{ 
+ StringTokenizer st = new StringTokenizer(str," "); 
+int i=0; 
+while(st.hasMoreTokens()) 
+{ 
+String token=st.nextToken(); 
+methodName=token; 
+val1 = Integer.parseInt(st.nextToken()); 
+val2 = Integer.parseInt(st.nextToken()); 
+}
+} 
+System.out.println(str); 
+InetAddress ia = InetAddress.getLocalHost(); 
+if(methodName.equalsIgnoreCase("add")) 
+{ 
+result= "" + add(val1,val2); 
+} 
+methodName.equalsIgnoreCase("sub")) 
+{ 
+result= "" + sub(val1,val2); 
+} 
+else if(methodName.equalsIgnoreCase("mul")) 
+{ 
+result= "" + mul(val1,val2); 
+} 
+else if(methodName.equalsIgnoreCase("div")) 
+{ 
+result= "" + div(val1,val2); 
+} 
+byte b1[]=result.getBytes(); 
+DatagramSocket ds1 = new DatagramSocket();
+
+DatagramPacket dp1 = new 
+DatagramPacket(b1,b1.length,InetAddress.getLocalHost(), 1300); 
+System.out.println("result : "+result+"\n"); 
+ds1.send(dp1); 
+} 
+} 
+catch (Exception e) 
+{ 
+e.printStackTrace(); 
+} 
+} 
+public int add(int val1, int val2) 
+{ 
+return val1+val2; 
+} 
+public int sub(int val3, int val4) 
+{ 
+return val3-val4; 
+} 
+public int mul(int val3, int val4) 
+{ 
+return val3*val4; 
+} 
+public int div(int val3, int val4) 
+{ 
+return val3/val4; 
+}
+public static void main(String[] args) 
+{ 
+new RPCServer(); 
+} 
+}
+---------------------------------------------------------------------------------
+							Lab4-Tsask2-t converts digits to words
+	clientconvert.java
+importjava.rmi.*;
+importjava.io.*;
+public class ClientConvert
+{
+public static void main(String args[]) throws Exception
+{
+InterConverth1 = (InterConvert)Naming.lookup("Wrd");
+BufferedReaderbr = new BufferedReader(new InputStreamReader(System.in));
+System.out.println("Enter a number : \t");
+String no = br.readLine();
+String ans = h1.convertDigit(no);
+System.out.println("The word representation of the entered digit is : " +ans);
+}
+}
+---------------------------------------------------------------------
+	interconvert.java
+importjava.rmi.*;
+public interface InterConvert extends Remote
+{
+public String convertDigit(String no) throws Exception;
+}
+----------------------------------------------------------------------
+	serverconvert.java
+importjava.rmi.*;
+importjava.rmi.server.*;
+public class ServerConvert extends UnicastRemoteObject implements InterConvert
+{
+publicServerConvert() throws Exception
+{
+}
+public String convertDigit(String no) throws Exception
+{
+String str = "";
+for(int i = 0; i <no.length(); i++)
+{
+int p = no.charAt(i);
+if( p == 48)
+{
+str += "zero ";
+}
+if( p == 49)
+{
+str += "one ";
+}
+if( p == 50)
+{ 
+33
+str += "two ";
+}
+if( p == 51)
+{
+str += "three ";
+}
+if( p == 52)
+{
+str += "four ";
+}
+if( p == 53)
+{
+str += "five ";
+}
+if( p == 54)
+{
+str += "six ";
+}
+if( p == 55)
+{
+str += "seven ";
+}
+if( p == 56)
+{
+str += "eight ";
+}
+if( p == 57)
+{
+str += "nine ";
+}
+}
+returnstr;
+}
+public static void main(String args[]) throws Exception
+{
+ServerConverts1 = new ServerConvert();
+Naming.bind("Wrd",s1);
+System.out.println("Object registered....");
+}
+}
+-------------------------------------------------------------------------------
+							Lab4-Task 1-current date and time
+	clientdate.java
+importjava.rmi.*;
+importjava.io.*;
+public class ClientDate
+{
+public static void main(String args[]) throws Exception
+{
+String s1;
+InterDateh1 = (InterDate)Naming.lookup("DS");
+s1 = h1.display();
+System.out.println(s1);
+}
+}
+-----------------------------------------------------------------
+	interdate.java
+importjava.rmi.*;
+public interface InterDate extends Remote
+{
+public String display() throws Exception;
+}
+---------------------------------------------------------------------
+	serverdate.java
+importjava.rmi.*;
+importjava.rmi.server.*;
+importjava.util.*;
+public class ServerDate extends UnicastRemoteObject implements InterDate
+{
+publicServerDate() throws Exception
+{
+}
+public String display() throws Exception
+{
+String str = "";
+Date d = new Date();
+str = d.toString();
+returnstr;
+}
+public static void main(String args[]) throws Exception
+{
+ServerDates1 = new ServerDate();
+Naming.bind("DS",s1);
+System.out.println("Object registered.....");
+}
+}
